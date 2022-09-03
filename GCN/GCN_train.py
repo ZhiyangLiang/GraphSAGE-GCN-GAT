@@ -21,7 +21,7 @@ def train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val, fa
     optimizer.step()
 
     if not fastmode:
-        model.eval() # 注意：dropout会影响前向传播,从而影响预测结果
+        model.eval()  # 注意：dropout会影响前向传播,从而影响预测结果
         output = model(features, adj)
     loss_val = F.nll_loss(output[idx_val], labels[idx_val])
     acc_val = accuracy(output[idx_val], labels[idx_val])

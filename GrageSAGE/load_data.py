@@ -21,10 +21,7 @@ def load_cora():
                 label_map[info_label] = len(label_map) # len({}) = 1
             labels[i] = label_map[info_label]
     adj_lists = defaultdict(set) # 注意：此处不能用普通的set
-    # print(adj_lists)
-    # print(node_map)
-    # print(label_map)
-    # print(labels.shape)
+
     with open("./cora/cora.cites") as fp:
         for i, line in enumerate(fp):
             info = line.strip().split()

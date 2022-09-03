@@ -8,9 +8,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from GraphSAGE_model import MeanAggregator, Encoder, SupervisedGraphSage
-from GCN_model import GCN
-from GAT_model import GAT
+from GraphSAGE_model import MeanAggregator
+from GraphSAGE_model import Encoder
+from GraphSAGE_model import SupervisedGraphSage
+# from load_data import load_cora
 from load_data import load_data
 
 def train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val, fastmode):
@@ -51,13 +52,14 @@ def accuracy(output, labels):
     correct = correct.sum()
     return correct / len(labels)
 
-def cora_train(Model):
+
+def cora_train():
     parser = argparse.ArgumentParser()
     parser.add_argument("--no_cuda", action="store_true", default=False, help="Disables CUDA training.")
-    parser.add_argument("--fastmode", action="store_true", default=False, help="Validate during training pass.") # 设置为True后训练速度会提升,val_acc会下降,但acc_test不受影响
+    parser.add_argument("--fastmode", action="store_true", default=False, help="Validate during training pass.") # 设置为True后训练速度大幅提升
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
     parser.add_argument("--epochs", type=int, default=200, help="Number of epochs to train.")
-    parser.add_argument("--lr", type=float, default=0.01, help="Initial learning rate.")
+    parser.add_argument("--lr", type=float, default=0.01, help="Initial learning rate.")# 对于GraphSAGE,可以通过调低lr来提升val_acc
     parser.add_argument("--weight_decay", type=float, default=5e-4, help="Weight dacay (L2 loss on parameters).")
     parser.add_argument("--hidden", type=int, default=8, help="Number of hidden units.")
     parser.add_argument("--nb_heads", type=int, default=8, help="Number of head attentions.")
@@ -73,22 +75,16 @@ def cora_train(Model):
         torch.cuda.manual_seed(args.seed)
 
     adj, features, labels, idx_train, idx_val, idx_test = load_data()
-    if Model == SupervisedGraphSage:
-        agg1 = MeanAggregator()
-        enc1 = Encoder(feature_dim=1433, embed_dim=128,
-                       aggregator=agg1)  # gcn=False
-        agg2 = MeanAggregator()
-        enc2 = Encoder(feature_dim=enc1.embed_dim, embed_dim=128,
-                       aggregator=agg2, base_model=enc1)  # gcn=False
-        # agg3 = MeanAggregator()
-        # enc3 = Encoder(feature_dim=enc2.embed_dim, embed_dim=128,
-        #                aggregator=agg3, base_model=enc2)  # gcn=False
-        model = SupervisedGraphSage(num_classes=7, dropout=args.dropout, enc=enc2)
-    elif Model == GCN:
-        model = GCN(nfeat=features.shape[1], nhid=args.hidden, nclass=labels.max().item() + 1, dropout=args.dropout)
-    elif Model == GAT:
-        model = GAT(nfeat=features.shape[1], nhid=args.hidden, nclass=int(labels.max()) + 1, dropout=args.dropout,
-                    nheads=args.nb_heads, alpha=args.alpha)
+    agg1 = MeanAggregator()
+    enc1 = Encoder(feature_dim=1433, embed_dim=128,
+                   aggregator=agg1)  # gcn=False
+    agg2 = MeanAggregator()
+    enc2 = Encoder(feature_dim=enc1.embed_dim, embed_dim=128,
+                   aggregator=agg2, base_model=enc1)  # gcn=False
+    # agg3 = MeanAggregator()
+    # enc3 = Encoder(feature_dim=enc2.embed_dim, embed_dim=128,
+    #                aggregator=agg3, base_model=enc2)  # gcn=False
+    model = SupervisedGraphSage(num_classes=7, dropout=args.dropout, enc=enc2)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     if args.cuda:
         model.cuda()
@@ -106,12 +102,7 @@ def cora_train(Model):
     best_epoch = 0
     for epoch in range(args.epochs):
         loss_values.append(train(epoch=epoch, model=model, optimizer=optimizer, features=features, adj=adj, labels=labels, idx_train=idx_train, idx_val=idx_val, fastmode=args.fastmode))
-        if Model == SupervisedGraphSage:
-            torch.save(model.state_dict(), "GraphSAGE.{}.pkl".format(epoch))
-        elif Model == GCN:
-            torch.save(model.state_dict(), "GCN.{}.pkl".format(epoch))
-        elif Model == GAT:
-            torch.save(model.state_dict(), "GAT.{}.pkl".format(epoch))
+        torch.save(model.state_dict(), "GraphSAGE.{}.pkl".format(epoch))
         if loss_values[-1] < best:
             best = loss_values[-1]
             best_epoch = epoch
@@ -136,6 +127,4 @@ def cora_train(Model):
     test(model=model, features=features, adj=adj, labels=labels, idx_test=idx_test)
 
 if __name__ =="__main__":
-    cora_train(SupervisedGraphSage)
-    # cora_train(GCN)
-    # cora_train(GAT)
+    cora_train()
