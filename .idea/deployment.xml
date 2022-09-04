@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="root@i-1.gpushare.com:36789" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="root@i-1.gpushare.com:18200">
         <serverdata>
@@ -51,6 +51,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@i-1.gpushare.com:55820">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_851" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@i-2.gpushare.com:55707 password">
         <serverdata>
           <mappings>
@@ -76,6 +83,20 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@region-11.autodl.com:26378">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@region-11.autodl.com:26378 (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

@@ -81,5 +81,5 @@ class SupervisedGraphSage(nn.Module):
         # embeds = self.enc(features, adj)
         embeds = F.relu(self.enc(features, adj))
         scores = embeds.mm(self.weight)
-        # scores = F.dropout(scores, self.dropout, training=self.training)
+        scores = F.dropout(scores, self.dropout, training=self.training)
         return F.log_softmax(scores, dim=1)

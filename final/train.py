@@ -12,6 +12,8 @@ from GraphSAGE_model import MeanAggregator, Encoder, SupervisedGraphSage
 from GCN_model import GCN
 from GAT_model import GAT
 from load_data import load_data
+# import visdom
+import matplotlib.pyplot as plt
 
 def train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val, fastmode):
     t = time.time()
@@ -34,7 +36,7 @@ def train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val, fa
           'loss_val: {:.4f}'.format(loss_val.data.item()),
           'acc_val: {:.4f}'.format(acc_val.data.item()),
           'time: {:.4f}s'.format(time.time() - t))
-    return loss_val.data.item()
+    return loss_val.data.item(), acc_train.data.item(), acc_val.data.item()
 
 def test(model, features, adj, labels, idx_test):
     model.eval()
@@ -51,19 +53,31 @@ def accuracy(output, labels):
     correct = correct.sum()
     return correct / len(labels)
 
+def myplot(loss_values, acc_train_values, acc_val_values, model_str):
+    plt.figure(figsize=(12, 8))
+    x = list(np.linspace(0, 499, 500))
+    # plt.plot(x, loss_values, label="{}:loss_values".format(model_str))
+    plt.plot(x, acc_train_values, label="{}:acc_train_values".format(model_str))
+    plt.plot(x, acc_val_values, label="{}:acc_val_values".format(model_str))
+    # plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.0])
+    plt.legend()
+    plt.savefig('../image/GCN4.jpg')
+    plt.show()
+
 def cora_train(Model):
     parser = argparse.ArgumentParser()
     parser.add_argument("--no_cuda", action="store_true", default=False, help="Disables CUDA training.")
     parser.add_argument("--fastmode", action="store_true", default=False, help="Validate during training pass.") # 设置为True后训练速度会提升,val_acc会下降,但acc_test不受影响
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
-    parser.add_argument("--epochs", type=int, default=200, help="Number of epochs to train.")
+    parser.add_argument("--epochs", type=int, default=500, help="Number of epochs to train.")
     parser.add_argument("--lr", type=float, default=0.01, help="Initial learning rate.")
     parser.add_argument("--weight_decay", type=float, default=5e-4, help="Weight dacay (L2 loss on parameters).")
     parser.add_argument("--hidden", type=int, default=8, help="Number of hidden units.")
     parser.add_argument("--nb_heads", type=int, default=8, help="Number of head attentions.")
     parser.add_argument("--dropout", type=float, default=0.5, help="Dropout rate (1 - keep probability).")
     parser.add_argument("--alpha", type=float, default=0.2, help="Alpha for the leaky_relu.")
-    parser.add_argument("--patience", type=int, default=100, help="Patience")
+    parser.add_argument("--patience", type=int, default=500, help="Patience")
     args = parser.parse_known_args()[0]
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     random.seed(args.seed)
@@ -101,17 +115,27 @@ def cora_train(Model):
 
     # t_total = time.time()
     loss_values = []
+    acc_train_values = []
+    acc_val_values = []
     bad_counter = 0
     best = args.epochs + 1
     best_epoch = 0
     for epoch in range(args.epochs):
-        loss_values.append(train(epoch=epoch, model=model, optimizer=optimizer, features=features, adj=adj, labels=labels, idx_train=idx_train, idx_val=idx_val, fastmode=args.fastmode))
+        loss, acc_train, acc_val = train(epoch=epoch, model=model, optimizer=optimizer, features=features, adj=adj, labels=labels,
+              idx_train=idx_train, idx_val=idx_val, fastmode=args.fastmode)
+        loss_values.append(loss)
+        acc_train_values.append(acc_train)
+        acc_val_values.append(acc_val)
         if Model == SupervisedGraphSage:
             torch.save(model.state_dict(), "GraphSAGE.{}.pkl".format(epoch))
         elif Model == GCN:
             torch.save(model.state_dict(), "GCN.{}.pkl".format(epoch))
         elif Model == GAT:
             torch.save(model.state_dict(), "GAT.{}.pkl".format(epoch))
+        # x = np.linspace(0, epoch, epoch + 1)
+        # vis.line(X=x, Y=loss_values, win="1", opts=dict(title='{}:loss_values'.format(str)))
+        # vis.line(X=x, Y=acc_train_values, win="2", opts=dict(title='{}:acc_train_values'.format(str)))
+        # vis.line(X=x, Y=acc_val_values, win="3", opts=dict(title='{}:acc_val_values'.format(str)))
         if loss_values[-1] < best:
             best = loss_values[-1]
             best_epoch = epoch
@@ -132,10 +156,13 @@ def cora_train(Model):
         epoch_nb = int(file.split('.')[1])
         if epoch_nb > best_epoch:
             os.remove(file)
-
+    myplot(loss_values, acc_train_values, acc_val_values, model_str="GAT")
     test(model=model, features=features, adj=adj, labels=labels, idx_test=idx_test)
 
 if __name__ =="__main__":
-    cora_train(SupervisedGraphSage)
-    # cora_train(GCN)
+    # vis = visdom.Visdom()
+    # vis = visdom.Visdom(port=6006)
+
+    # cora_train(SupervisedGraphSage)
+    cora_train(GCN)
     # cora_train(GAT)
