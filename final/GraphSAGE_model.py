@@ -78,8 +78,8 @@ class SupervisedGraphSage(nn.Module):
         init.xavier_uniform_(self.weight)
 
     def forward(self, features, adj):
-        # embeds = self.enc(features, adj)
-        embeds = F.relu(self.enc(features, adj))
+        embeds = self.enc(features, adj)
+        # embeds = F.relu(self.enc(features, adj))
         scores = embeds.mm(self.weight)
-        scores = F.dropout(scores, self.dropout, training=self.training)
+        # scores = F.dropout(scores, self.dropout, training=self.training)
         return F.log_softmax(scores, dim=1)

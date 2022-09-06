@@ -48,7 +48,7 @@ def normalize_adj(mx):
     r_inv_sqrt = np.power(rowsum, -0.5).flatten()
     r_inv_sqrt[np.isinf(r_inv_sqrt)] = 0.
     r_mat_inv_sqrt = sp.diags(r_inv_sqrt)
-    # return mx.dot(r_mat_inv_sqrt).transpose().dot(r_mat_inv_sqrt)
+    # return mx.dot(r_mat_inv_sqrt).transpose()
     mid = np.dot(r_mat_inv_sqrt, mx)
     return np.dot(mid, r_mat_inv_sqrt)
 

@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from torch.nn.parameter import Parameter # 也可直接调用nn.Parameter
+from torch.nn.parameter import Parameter  # 也可直接调用nn.Parameter
 from torch.nn.modules.module import Module # 也可直接调用nn.Module
 
 class GraphConvolution(Module):

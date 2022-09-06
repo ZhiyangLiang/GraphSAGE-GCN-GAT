@@ -12,6 +12,7 @@ from GraphSAGE_model import MeanAggregator, Encoder, SupervisedGraphSage
 from GCN_model import GCN
 from GAT_model import GAT
 from load_data import load_data
+from load_data import load_data2
 # import visdom
 import matplotlib.pyplot as plt
 
@@ -62,7 +63,7 @@ def myplot(loss_values, acc_train_values, acc_val_values, model_str):
     # plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
     plt.legend()
-    plt.savefig('../image/GCN4.jpg')
+    plt.savefig('./image/GraphSAGE6.jpg')
     plt.show()
 
 def cora_train(Model):
@@ -87,6 +88,12 @@ def cora_train(Model):
         torch.cuda.manual_seed(args.seed)
 
     adj, features, labels, idx_train, idx_val, idx_test = load_data()
+    # _, labels2, _ = load_data2()
+    # print(labels)
+    # print(labels[1])
+    # print("-"*50)
+    # print(labels2)
+    # print(labels2[1])
     if Model == SupervisedGraphSage:
         agg1 = MeanAggregator()
         enc1 = Encoder(feature_dim=1433, embed_dim=128,
@@ -156,13 +163,13 @@ def cora_train(Model):
         epoch_nb = int(file.split('.')[1])
         if epoch_nb > best_epoch:
             os.remove(file)
-    myplot(loss_values, acc_train_values, acc_val_values, model_str="GAT")
+    myplot(loss_values, acc_train_values, acc_val_values, model_str="GraphSAGE")
     test(model=model, features=features, adj=adj, labels=labels, idx_test=idx_test)
 
 if __name__ =="__main__":
     # vis = visdom.Visdom()
     # vis = visdom.Visdom(port=6006)
 
-    # cora_train(SupervisedGraphSage)
-    cora_train(GCN)
+    cora_train(SupervisedGraphSage)
+    # cora_train(GCN)
     # cora_train(GAT)

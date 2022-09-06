@@ -105,7 +105,7 @@ class SupervisedGraphSage(nn.Module):
         scores_softmax = torch.exp(scores.t())/torch.sum(torch.exp(scores.t()), dim=1).reshape(-1, 1)
         # print(scores_softmax.shape)
         # print(scores_softmax.sum(dim=1))
-        return scores_softmax # (34, 4)
+        return scores_softmax  # (34, 4)
 
     def loss(self, nodes, labels):
         scores = self.forward(nodes)
