@@ -26,7 +26,6 @@ class MeanAggregator(nn.Module):
         unique_nodes_list = list(set.union(*samp_neighs))
         unique_nodes = {n:i for i, n in enumerate(unique_nodes_list)}
         mask = Variable(torch.zeros(2708, 2708))
-        mask = mask[nodes]
         column_indices = [unique_nodes[n] for samp_neigh in samp_neighs for n in samp_neigh]
         row_indices = [i for i in range(len(samp_neighs)) for j in range(len(samp_neighs[i]))]
         mask[row_indices, column_indices] = 1

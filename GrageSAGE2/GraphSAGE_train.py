@@ -80,8 +80,8 @@ def cora_train():
         end_time = time.time()
         times.append(end_time - start_time)
         val_output = graphsage.forward(val)
-        print("val_output.shape:", val_output.shape)
-        print("labels[val].shape:", labels[val].shape)
+        # print("val_output.shape:", val_output.shape)
+        # print("labels[val].shape:", labels[val].shape)
         acc_val = accuracy(val_output, labels[val])
         print("epoch:{}".format(batch + 1), "loss:{}".format(loss.item()), "accuracy:{}".format(acc_val))
 

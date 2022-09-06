@@ -4,8 +4,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 from GraphSAGE_model import MeanAggregator
+from GraphSAGE_model import SumAggregator
+from GraphSAGE_model import MaxAggregator
 from GraphSAGE_model import Encoder
 from GraphSAGE_model import SupervisedGraphSage
+from GraphSAGE_model import GCNAggregator
 from load_data import load_cora
 
 def train(nodes, labels, model, optimizer):
@@ -47,7 +50,7 @@ def cora_train():
     # print(features)
     # print(features.weight.sum(dim=1))
 
-    agg1 = MeanAggregator(features)
+    agg1 = GCNAggregator(features)
     enc1 = Encoder(features=features, feature_dim=1433, embed_dim=128, adj_lists=adj_lists,
                    aggregator=agg1)  # gcn=False
     agg2 = MeanAggregator(features=lambda nodes: enc1(nodes).t())
