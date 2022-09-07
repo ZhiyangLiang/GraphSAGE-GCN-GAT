@@ -170,6 +170,6 @@ if __name__ =="__main__":
     # vis = visdom.Visdom()
     # vis = visdom.Visdom(port=6006)
 
-    cora_train(SupervisedGraphSage)
+    # cora_train(SupervisedGraphSage)
     # cora_train(GCN)
-    # cora_train(GAT)
+    cora_train(GAT)
