@@ -262,6 +262,12 @@ class SupervisedGraphSage(nn.Module):
 
     def loss(self, nodes, labels):
         scores = self.forward(nodes)
+
+        # preds = scores.max(1)[1].type_as(labels).reshape(labels.shape)
+        # correct = preds.eq(labels).double()
+        # correct = correct.sum()
+        # return self.xent(scores, labels), correct / len(labels)
+
         return self.xent(scores, labels)
 
 def train(nodes, labels, model, optimizer):

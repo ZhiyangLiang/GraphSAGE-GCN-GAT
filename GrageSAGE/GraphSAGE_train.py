@@ -135,8 +135,8 @@ def cora_train():
     # print(val_output.data.numpy().argmax(axis=1))
     # print("-"*50)
     # print(val_output.argmax(axis=1))
-    print("Validation F1:", f1_score(labels[val], val_output.argmax(axis=1), average="micro"))
-    print("Average batch time:", np.mean(times))
+    # print("Validation F1:", f1_score(labels[val], val_output.argmax(axis=1), average="micro"))
+    # print("Average batch time:", np.mean(times))
 
 if __name__ =="__main__":
     # graph_train()

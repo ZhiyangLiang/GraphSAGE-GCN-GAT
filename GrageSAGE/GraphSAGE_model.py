@@ -108,8 +108,13 @@ class SupervisedGraphSage(nn.Module):
         return scores_softmax  # (34, 4)
 
     def loss(self, nodes, labels):
+        print("nodes:", nodes)
         scores = self.forward(nodes)
         # print(scores.sum(dim=1))
+        print("scores.shape:", scores.shape)
+        print("labels.shape:", labels.shape)
+        print("scores:", scores)
+        print("labels:", labels)
         return self.xent(scores, labels)
 
 
